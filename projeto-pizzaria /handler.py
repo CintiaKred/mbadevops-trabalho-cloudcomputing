@@ -4,7 +4,7 @@ from boto3.dynamodb.conditions import Key
 import random
 from datetime import datetime
 
-dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+dynamodb = boto3.client('dynamodb')
 sqs = boto3.client('sqs')
 
 items = [
@@ -29,7 +29,6 @@ items = [
 ]
 
 def processPedido(event, context):
-    print("event: {}".format(json.dumps(event)))
     for item in items:
         dynamodb.put_item(
                 TableName = 'eventos-pizzaria',
@@ -40,11 +39,11 @@ def processPedido(event, context):
                     "time": {"S": item["time"]}
                 }
             )
-        print(f"Item inserido: {item['pedido']} - {item['status']}")
-    return True
-
-def enviarParaFilaSQS(event, context):
+    print(f"Item inserido: {item['pedido']} - {item['status']}")
     print("event: {}".format(json.dumps(event)))
+    return True
+   
+def enviarParaFila(event, context):
     for record in event['Records']:
         evento = json.loads(record['body'])
         if evento['status'] == 'pronto':
@@ -52,10 +51,12 @@ def enviarParaFilaSQS(event, context):
                 QueueUrl='https://sqs.us-east-1.amazonaws.com/775117574036/espera-entrega',
                 MessageBody=json.dumps(evento)
             )
-            print(f"Mensagem enviada para a fila de entrega: {response}")
+    print(f"Mensagem enviada para a fila de entrega: {response}")
+    print("event: {}".format(json.dumps(event)))
     return True
     
-def pizzaEntregue(event, context):
+def entregue(event, context):
     print("event: {}".format(json.dumps(event)))
+    return True
     
     return True
