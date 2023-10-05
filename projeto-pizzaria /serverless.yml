@@ -12,36 +12,40 @@ provider:
         useCloudFormation: true
         
 functions:
-    processPedido:
-        handler: handler.processPedido
+    pedido:
+        handler: handler.pedidoHandler
+        events:
+            - eventBridge:
+                eventBus:
+                    - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
+                pattern:
+                    source:
+                        - com.pizza.status
+    enviarParaFila:
+        handler: handler.enviarParaFilaHandler
         events:
             - eventBridge:
                 eventBus:
                     - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
                 pattern:
                     detail-type:
-                        - pedido
+                        - Alteracao Pizza
                     source:
                         - com.pizza.status
-    enviarParaFilaSQS:
-        handler: handler.enviarParaFilaSQS
-        events:
-            - eventBridge:
-                eventBus:
-                    - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
-                pattern:
-                    detail-type:
-                        - pizza-pronta
-                    source:
-                        - com.pizza.status
-    pizzaEntregue:
-        handler: handler.pizzaEntregue
+                    detail:
+                        status:
+                            - pronto
+    entregue:
+        handler: handler.entregueHandler
         event:
             - eventBridge:
                 eventBus:
                     - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
                 pattern:
                     detail-type:
-                        - pizza-pronta
+                        - Alteracao Pizza
                     source:
                         - com.pizza.status
+                    detail:
+                        status:
+                            - pronto
