@@ -1,0 +1,47 @@
+service: pizzaria-project
+
+frameworkVersion: '3'
+
+provider:
+    name: aws
+    runtime: python3.8
+    region: 'us-east-1'
+    iam:
+        role: !Sub arn:aws:iam::${AWS::AccountId}:role/LabRole
+    eventBridge:
+        useCloudFormation: true
+        
+functions:
+    processPedido:
+        handler: handler.processPedido
+        events:
+            - eventBridge:
+                eventBus:
+                    - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
+                pattern:
+                    detail-type:
+                        - pedido
+                    source:
+                        - com.pizza.status
+    enviarParaFilaSQS:
+        handler: handler.enviarParaFilaSQS
+        events:
+            - eventBridge:
+                eventBus:
+                    - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
+                pattern:
+                    detail-type:
+                        - pizza-pronta
+                    source:
+                        - com.pizza.status
+    pizzaEntregue:
+        handler: handler.pizzaEntregue
+        event:
+            - eventBridge:
+                eventBus:
+                    - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
+                pattern:
+                    detail-type:
+                        - pizza-pronta
+                    source:
+                        - com.pizza.status
