@@ -28,7 +28,7 @@ items = [
     }
 ]
 
-def processPedido(event, context):
+def pedido(event, context):
     for item in items:
         dynamodb.put_item(
                 TableName = 'eventos-pizzaria',
@@ -48,7 +48,7 @@ def enviarParaFila(event, context):
         evento = json.loads(record['body'])
         if evento['status'] == 'pronto':
             response = sqs.send_message(
-                QueueUrl='https://sqs.us-east-1.amazonaws.com/775117574036/espera-entrega',
+                sqs.get_queue_by_name(QueueName='espera-entrega'),
                 MessageBody=json.dumps(evento)
             )
     print(f"Mensagem enviada para a fila de entrega: {response}")
