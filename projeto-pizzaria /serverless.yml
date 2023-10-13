@@ -37,7 +37,7 @@ functions:
                             - pronto
     entregue:
         handler: handler.entregueHandler
-        event:
+        events:
             - eventBridge:
                 eventBus:
                     - arn:aws:events:${aws:region}:${aws:accountId}:event-bus/pizzaria
