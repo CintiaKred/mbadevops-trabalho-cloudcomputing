@@ -12,8 +12,8 @@ provider:
         useCloudFormation: true
         
 functions:
-    pedido:
-        handler: handler.pedidoHandler
+    processPedido:
+        handler: handler.processPedidoHandler
         events:
             - eventBridge:
                 eventBus:
@@ -24,8 +24,6 @@ functions:
             - stream:
                 type: dynamodb
                 arn: arn:aws:dynamodb:us-east-1:940915789164:table/eventos-pizzaria/stream/2023-10-15T01:38:35.724
-                batchSize: 1
-                maximumRetryAttempts: 10
                 enabled: true
     enviarParaFila:
         handler: handler.enviarParaFilaHandler
