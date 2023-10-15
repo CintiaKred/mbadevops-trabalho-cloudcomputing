@@ -35,5 +35,3 @@ def enviarParaFila(event, context):
 def entregue(event, context):
     print("event: {}".format(json.dumps(event)))
     return True
-    
-    return True
