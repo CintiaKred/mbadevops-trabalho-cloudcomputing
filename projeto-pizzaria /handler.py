@@ -3,43 +3,20 @@ import boto3
 from boto3.dynamodb.conditions import Key
 import random
 from datetime import datetime
+import uuid
 
-dynamodb = boto3.client('dynamodb')
+dynamodb = boto3.client('eventos-pizzaria')
 sqs = boto3.client('sqs')
 
-items = [
-    {
-        "pedido": "1234",
-        "status": "no forno",
-        "cliente": "tatiane",
-        "time": "2021-09-23T15:35:41Z"
-    },
-    {
-        "pedido": "5678",
-        "status": "montando",
-        "cliente": "murilo",
-        "time": "2021-09-23T15:45:00Z"
-    },
-    {
-        "pedido": "9876",
-        "status": "pronto",
-        "cliente": "teresa",
-        "time": "2021-09-23T16:00:15Z"
-    }
-]
+clientes = ['rafael','maria','teresa', 'tatiane', 'murilo']
+pedidos = ['1234','5647','8910','1112','1314','1416']
+status = ['pedido feito','montando', 'no forno','saiu do forno', 'embalando','pronto']
+peeker = random.SystemRandom()
 
-def pedido(event, context):
-    for item in items:
-        dynamodb.put_item(
-                TableName = 'eventos-pizzaria',
-                Item = {
-                    "pedido": {"S": item["pedido"]},
-                    "status": {"S": item["status"]},
-                    "cliente": {"S": item["cliente"]},
-                    "time": {"S": item["time"]}
-                }
-            )
-    print(f"Item inserido: {item['pedido']} - {item['status']}")
+def processPedido(event, context):
+    for event in range(10000):
+        dynamodb.put_item({'clientes':str(uuid.uuid4()), 
+        'datetime':str(datetime.now()),'pedidos':peeker.choice(pedidos), 'status':peeker.choice(status)})
     print("event: {}".format(json.dumps(event)))
     return True
    
